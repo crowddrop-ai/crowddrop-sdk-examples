@@ -53,9 +53,16 @@ character, the `robot` block's identifier/model/location/battery) before
 running this - or run it as-is first to see the demo persona work, and
 come back and edit it before Step 4:
 
+macOS/Linux (bash/zsh):
 ```bash
 export DEVELOPER_CREDENTIAL=<from register_developer.py's .env - see Step 0 above>
 export BACKEND_URL=<your CrowdDrop backend's base URL>
+python register_agent_persona.py
+```
+Windows (PowerShell):
+```powershell
+$env:DEVELOPER_CREDENTIAL = "<from register_developer.py's .env - see Step 0 above>"
+$env:BACKEND_URL = "<your CrowdDrop backend's base URL>"
 python register_agent_persona.py
 ```
 

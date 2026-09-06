@@ -108,8 +108,14 @@ Administrator once: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
 
 ### Step 2: become a registered developer
 
+macOS/Linux (bash/zsh):
 ```bash
 export BACKEND_URL=<your CrowdDrop backend's base URL>
+python register_developer.py "Your Name or Org" you@example.com
+```
+Windows (PowerShell):
+```powershell
+$env:BACKEND_URL = "<your CrowdDrop backend's base URL>"
 python register_developer.py "Your Name or Org" you@example.com
 ```
 This calls `POST /developers/register` and writes your reusable
@@ -118,8 +124,13 @@ shell before Step 3:
 ```bash
 export $(cat .env | xargs)   # macOS/Linux
 ```
-On Windows, open `.env` and copy the value into `$env:DEVELOPER_CREDENTIAL`
-instead. **MVP note:** registration is currently open, with no email
+```powershell
+# Windows (PowerShell)
+Get-Content .env | ForEach-Object {
+    if ($_ -match '^([^=]+)=(.*)$') { Set-Item "env:$($matches[1])" $matches[2] }
+}
+```
+**MVP note:** registration is currently open, with no email
 verification - see ["Getting credentials"](#getting-credentials) below.
 
 ### Step 3: register your agent persona
@@ -163,9 +174,17 @@ with your own - neither is just a demo to run as-is and leave untouched:
   example - start there and add to its `COMMAND_HANDLERS`, or copy
   `pubsub/drone_implementation.py` (the next step up, closer to a real
   drone's shape) as your own module instead.
+
+  macOS/Linux (bash/zsh):
   ```bash
   cd pubsub
   export DRONE_ID=hello-world-drone
+  python hello_world.py
+  ```
+  Windows (PowerShell):
+  ```powershell
+  cd pubsub
+  $env:DRONE_ID = "hello-world-drone"
   python hello_world.py
   ```
   Full walkthrough, including how to send it a test command:
