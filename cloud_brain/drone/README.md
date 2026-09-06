@@ -89,6 +89,40 @@ Re-running this script for the same `config_key` **updates** that persona
 needed) instead of minting a second device key - your existing `.env` stays
 valid.
 
+### Updating, disabling, or deleting your persona
+
+**Update:** just edit `persona.yml` and re-run `register_agent_persona.py` -
+covered above.
+
+**Disable, without losing your persona's config/history:** set
+`enabled: false` in `persona.yml` (see the field's comment there) and
+re-run `register_agent_persona.py`. Your persona is immediately removed
+from CrowdDrop's live agents (and stops appearing to end users) but its
+Firestore-backed config, device key, and history all stay intact - set
+`enabled: true` and re-run again to bring it back, live, no re-registration
+needed.
+
+**Delete outright:** there's no dedicated script for this yet, but it's one
+`curl` call - `DELETE /agents/{config_key}`, same `DEVELOPER_CREDENTIAL`
+header as everything else here:
+
+macOS/Linux (bash/zsh):
+```bash
+curl -X DELETE "$BACKEND_URL/agents/hello-world-drone" \
+  -H "X-Developer-Credential: $DEVELOPER_CREDENTIAL"
+```
+Windows (PowerShell):
+```powershell
+curl.exe -X DELETE "$env:BACKEND_URL/agents/hello-world-drone" `
+  -H "X-Developer-Credential: $env:DEVELOPER_CREDENTIAL"
+```
+Replace `hello-world-drone` with your own `config_key`. This is a hard
+delete - the persona's config, its device key (any device still holding
+`DRONE_DEVICE_KEY` immediately stops authenticating), and its history are
+all gone, and it cannot be recovered; there's no confirmation step, unlike
+the reversible disable above. Only the developer credential that created a
+persona can delete or update it - a mismatched credential gets a `403`.
+
 ## Step 2: pick your option
 
 Each option is its own self-contained folder here - own README, own

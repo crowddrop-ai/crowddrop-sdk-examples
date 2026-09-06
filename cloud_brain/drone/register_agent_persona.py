@@ -30,7 +30,15 @@ haven't already exported one yourself; an explicit export still wins.
 Edit persona.yml (next to this script) to describe your own device instead
 of this folder's demo persona - see that file's own comments for the exact
 shape, and PERSONA_YAML_PATH below if you'd rather keep your own device's
-definition somewhere else entirely.
+definition somewhere else entirely. persona.yml's optional `enabled: false`
+soft-disables a persona (still live in Firestore, just pulled out of
+CrowdDrop's active agents) without deleting it - flip it back to re-enable.
+
+Only the DEVELOPER_CREDENTIAL that created a config_key can update it -
+a mismatched credential gets a 403. There's no delete here; see this
+folder's README's "Updating, disabling, or deleting your persona" section
+for the DELETE /agents/{config_key} call that removes a persona (and its
+device key) outright.
 """
 import os
 import sys
@@ -112,6 +120,13 @@ def main() -> None:
 
     if response.status_code == 401:
         print("Rejected: invalid or missing developer credential.", file=sys.stderr)
+        sys.exit(1)
+    if response.status_code == 403:
+        print(
+            f"Rejected: config_key '{config_key}' was created by a different developer credential "
+            "and cannot be updated with this one.",
+            file=sys.stderr,
+        )
         sys.exit(1)
     if response.status_code == 409:
         print(f"Rejected: {response.json().get('detail', response.text)}", file=sys.stderr)

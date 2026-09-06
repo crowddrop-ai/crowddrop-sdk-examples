@@ -152,6 +152,13 @@ Step 1 for how re-running this script updates an existing agent persona
 instead of minting a second device key (one `DEVELOPER_CREDENTIAL` can
 register any number of agent personas - re-run this step per device), and
 `persona.yml`'s own header comment for its full field-by-field shape.
+Once a persona exists, see that same README's ["Updating, disabling, or
+deleting your
+persona"](cloud_brain/drone/README.md#updating-disabling-or-deleting-your-persona)
+section for how to soft-disable it (`enabled: false` in `persona.yml`,
+re-run this script) or delete it outright (`DELETE /agents/{config_key}`) -
+only the `DEVELOPER_CREDENTIAL` that created a persona can update or delete
+it.
 
 ### Step 4: implement and run your device
 

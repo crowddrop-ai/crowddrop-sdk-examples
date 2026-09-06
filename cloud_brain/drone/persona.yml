@@ -37,3 +37,10 @@ robot:
     initial_lon: 13.0483
     initial_heading: 0
     initial_battery: 100
+
+# Optional - defaults to true. Set to false and re-run register_agent_persona.py
+# to soft-disable this persona (removed from CrowdDrop's live agents
+# immediately, but its config/history stay intact - set back to true to
+# re-enable) without deleting it outright. See this folder's README's
+# "Updating, disabling, or deleting your persona" section.
+# enabled: true
