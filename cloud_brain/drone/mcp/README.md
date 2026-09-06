@@ -225,12 +225,42 @@ behave the same way - try `python verify_mcp_locally.py get_device_status`.
 
 ## Step B2: run it for real
 
-Also needs the `cloudflared` binary on PATH - see
-[Cloudflare's install docs](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)
-(no Cloudflare account needed for the quick-tunnel mode this uses), and
-`python-dotenv` (`pip install python-dotenv`) for the `.env` auto-loading
-described next - already pulled in if you installed this repo's top-level
-`requirements.txt` instead of just Step B1's `crowddrop-sdk[mcp]`.
+Also needs the `cloudflared` binary on PATH (no Cloudflare account needed -
+this uses Cloudflare's anonymous "quick tunnel" mode) and `python-dotenv`
+(`pip install python-dotenv`) for the `.env` auto-loading described next -
+already pulled in if you installed this repo's top-level `requirements.txt`
+instead of just Step B1's `crowddrop-sdk[mcp]`.
+
+### Installing `cloudflared`
+
+macOS (Homebrew):
+```bash
+brew install cloudflare/cloudflare/cloudflared
+```
+
+Windows (winget):
+```powershell
+winget install --id Cloudflare.cloudflared
+```
+PATH changes from an installer don't apply to an already-open terminal -
+open a fresh one before continuing.
+
+Linux (including a Raspberry-Pi-class ARM companion computer, if that's
+what your drone actually runs - `cloudflared` ships ARM64/ARMv7 builds
+too, not just x86_64): grab the binary for your architecture from
+[Cloudflare's downloads page](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/),
+then:
+```bash
+chmod +x cloudflared-linux-<your-arch>
+sudo mv cloudflared-linux-<your-arch> /usr/local/bin/cloudflared
+```
+(Debian/Ubuntu on x86_64 can instead use Cloudflare's apt repo - see the
+downloads page above for that command block.)
+
+Verify it's on PATH before running `mcp_example.py`:
+```bash
+cloudflared --version
+```
 
 `DRONE_DEVICE_KEY` doesn't need exporting by hand - `mcp_example.py`
 auto-loads it from `../.env` (`../register_agent_persona.py`'s output,
