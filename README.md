@@ -119,19 +119,12 @@ $env:BACKEND_URL = "<your CrowdDrop backend's base URL>"
 python register_developer.py "Your Name or Org" you@example.com
 ```
 This calls `POST /developers/register` and writes your reusable
-`DEVELOPER_CREDENTIAL` straight to a local `.env` file - load it into your
-shell before Step 3:
-```bash
-export $(cat .env | xargs)   # macOS/Linux
-```
-```powershell
-# Windows (PowerShell)
-Get-Content .env | ForEach-Object {
-    if ($_ -match '^([^=]+)=(.*)$') { Set-Item "env:$($matches[1])" $matches[2] }
-}
-```
-**MVP note:** registration is currently open, with no email
-verification - see ["Getting credentials"](#getting-credentials) below.
+`DEVELOPER_CREDENTIAL` straight to a local `.env` file. You don't need to
+load it into your shell yourself - every script that needs it
+(`register_agent_persona.py`, Step 3) auto-loads it from `.env` on
+startup, cross-platform, no extra command. **MVP note:** registration is
+currently open, with no email verification - see ["Getting
+credentials"](#getting-credentials) below.
 
 ### Step 3: register your agent persona
 
@@ -149,11 +142,11 @@ python register_agent_persona.py
 This registers a new **agent persona** - the thing your device embodies on
 CrowdDrop, distinct from the developer account you just created in Step 2.
 `BACKEND_URL` carries over from Step 2; `register_agent_persona.py` reads
-`DEVELOPER_CREDENTIAL` from your shell the same way. This calls
+`DEVELOPER_CREDENTIAL` the same auto-loaded way. This calls
 `POST /agents/create` once and writes the response's device key to a local
-`.env` file as `DRONE_DEVICE_KEY=...` - load it into your shell before
-Step 4, the same way as above (`DRONE_DEVICE_KEY` instead of
-`DEVELOPER_CREDENTIAL`). See
+`.env` file as `DRONE_DEVICE_KEY=...` - same story again: `mcp_example.py`/
+`drone_implementation.py` (Step 4) auto-load it from this file, no manual
+step needed. See
 [`cloud_brain/drone/README.md`](cloud_brain/drone/README.md#step-1-register-your-agent-persona-register_agent_personapy)'s
 Step 1 for how re-running this script updates an existing agent persona
 instead of minting a second device key (one `DEVELOPER_CREDENTIAL` can

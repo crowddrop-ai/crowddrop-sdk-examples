@@ -297,11 +297,16 @@ with real flight-controller calls.
 
 ### Run it against real GCP
 
+`DRONE_DEVICE_KEY` doesn't need exporting by hand - `drone_implementation.py`
+auto-loads it from `../.env` (`../register_agent_persona.py`'s output, the
+drone folder's README, one level up, Step 1) on startup - needs
+`python-dotenv` (`pip install python-dotenv`), already pulled in if you
+installed this repo's top-level `requirements.txt`.
+
 macOS/Linux (bash/zsh):
 ```bash
 export DRONE_ID=<your drone's identifier - the config_key you registered>
 export GCP_PROJECT_ID=<the CrowdDrop GCP project - ask CrowdDrop>
-export DRONE_DEVICE_KEY=<from ../register_agent_persona.py's .env - see the drone folder's README, one level up, Step 1>
 export BACKEND_TOKEN_VENDING_URL=<the token-vending URL - ask CrowdDrop>
 python drone_implementation.py
 ```

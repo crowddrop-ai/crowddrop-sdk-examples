@@ -20,9 +20,12 @@ exact variable name both option folders' scripts already read. .gitignore
 in this folder already excludes .env - never commit it.
 
 Usage:
-    export DEVELOPER_CREDENTIAL="the credential CrowdDrop handed you"
     export BACKEND_URL="https://your-crowddrop-backend.example"
     python register_agent_persona.py
+
+DEVELOPER_CREDENTIAL doesn't need exporting by hand - it's auto-loaded
+from ../../.env (the top-level register_developer.py's output) if you
+haven't already exported one yourself; an explicit export still wins.
 
 Edit persona.yml (next to this script) to describe your own device instead
 of this folder's demo persona - see that file's own comments for the exact
@@ -35,6 +38,13 @@ from typing import Any, Dict
 
 import requests
 import yaml
+from dotenv import load_dotenv
+
+# The top-level .env register_developer.py (Step 0) wrote
+# DEVELOPER_CREDENTIAL into - load_dotenv() never overrides a variable
+# already set in the real environment, so an explicit `export`/`$env:`
+# still takes precedence over this.
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
 
 DEVELOPER_CREDENTIAL = os.environ.get("DEVELOPER_CREDENTIAL")
 BACKEND_URL = os.environ.get("BACKEND_URL")

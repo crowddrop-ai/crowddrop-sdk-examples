@@ -53,15 +53,17 @@ character, the `robot` block's identifier/model/location/battery) before
 running this - or run it as-is first to see the demo persona work, and
 come back and edit it before Step 4:
 
+`DEVELOPER_CREDENTIAL` doesn't need exporting by hand - `register_agent_persona.py`
+auto-loads it from `../../.env` (Step 0's output) on startup. Just set
+`BACKEND_URL`:
+
 macOS/Linux (bash/zsh):
 ```bash
-export DEVELOPER_CREDENTIAL=<from register_developer.py's .env - see Step 0 above>
 export BACKEND_URL=<your CrowdDrop backend's base URL>
 python register_agent_persona.py
 ```
 Windows (PowerShell):
 ```powershell
-$env:DEVELOPER_CREDENTIAL = "<from register_developer.py's .env - see Step 0 above>"
 $env:BACKEND_URL = "<your CrowdDrop backend's base URL>"
 python register_agent_persona.py
 ```
@@ -69,10 +71,8 @@ python register_agent_persona.py
 This calls `POST /agents/create` once, and writes the response's device key
 straight into a local `.env` file as `DRONE_DEVICE_KEY=...` (already
 `.gitignore`d in this folder - never commit it). Both option guides below
-read that same `DRONE_DEVICE_KEY` variable, so load it into your shell
-before following either of them (e.g. `export $(cat .env | xargs)` on
-macOS/Linux, or open the file and copy the value into
-`$env:DRONE_DEVICE_KEY` on Windows).
+auto-load that same `.env` file the same way - no manual export/reload
+step needed there either.
 
 `DEVELOPER_CREDENTIAL` is a separate, reusable credential from the device
 key this call mints (Step 0 above) - a persona-scoped device key proves

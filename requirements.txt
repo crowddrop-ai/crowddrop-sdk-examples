@@ -9,3 +9,7 @@ crowddrop-sdk[cloud-brain]>=0.3.0,<1.0.0
 
 # register_agent_persona.py loads its persona definition from persona.yml.
 pyyaml>=6.0,<7.0
+
+# Every script that reads a credential/device key another script wrote to
+# .env auto-loads it on startup - see each script's own module docstring.
+python-dotenv>=1.0,<2.0

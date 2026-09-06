@@ -227,12 +227,18 @@ behave the same way - try `python verify_mcp_locally.py get_device_status`.
 
 Also needs the `cloudflared` binary on PATH - see
 [Cloudflare's install docs](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)
-(no Cloudflare account needed for the quick-tunnel mode this uses).
+(no Cloudflare account needed for the quick-tunnel mode this uses), and
+`python-dotenv` (`pip install python-dotenv`) for the `.env` auto-loading
+described next - already pulled in if you installed this repo's top-level
+`requirements.txt` instead of just Step B1's `crowddrop-sdk[mcp]`.
+
+`DRONE_DEVICE_KEY` doesn't need exporting by hand - `mcp_example.py`
+auto-loads it from `../.env` (`../register_agent_persona.py`'s output,
+the drone folder's README, one level up, Step 1) on startup.
 
 macOS/Linux (bash/zsh):
 ```bash
 export DRONE_ID=<your drone's identifier - the config_key you registered>
-export DRONE_DEVICE_KEY=<from ../register_agent_persona.py's .env - see the drone folder's README, one level up, Step 1>
 export BACKEND_URL=<your CrowdDrop backend's base URL>
 python mcp_example.py
 ```
