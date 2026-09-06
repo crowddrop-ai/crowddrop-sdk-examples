@@ -1,0 +1,11 @@
+# 0.3.0 is the floor because these examples rely on behavior that landed
+# across several releases: edge_agent.py's per-command dummy dispatch
+# (0.1.1, replacing a blanket NotImplementedError), its telemetry-publish
+# logging (0.1.2), and crowddrop_sdk.robot_protocol - RobotProtocol/
+# command_handlers_from_robot(), the recommended way to describe a device
+# on the MCP path (0.3.0; does not exist in any earlier release).
+# See https://pypi.org/project/crowddrop-sdk/ for the full version history.
+crowddrop-sdk[cloud-brain]>=0.3.0,<1.0.0
+
+# register_agent_persona.py loads its persona definition from persona.yml.
+pyyaml>=6.0,<7.0

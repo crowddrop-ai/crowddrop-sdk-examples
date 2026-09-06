@@ -1,0 +1,39 @@
+# The demo persona register_agent_persona.py registers by default - the
+# sibling pubsub/ and mcp/ option folders' examples are built around it.
+# Edit every field here to describe your own device instead - this file is
+# the whole request body POST /agents/create sends, see
+# register_agent_persona.py's own module docstring for the full
+# request/response shape.
+#
+# config_key and robot[0].identifier below must match each other, and must
+# match whatever DRONE_ID you export for the option folders' own scripts
+# (pubsub/hello_world.py, mcp/mcp_example.py, ...) - they identify the same
+# persona. register_agent_persona.py overrides both from a DRONE_ID
+# environment variable if one is set, so exporting DRONE_ID once keeps this
+# file and those scripts in sync without editing this file at all; edit the
+# two identifier fields directly instead if you'd rather hardcode a name
+# here.
+
+config_key: hello-world-drone
+default_name: Hello World Drone
+about_me: >-
+  A crowddrop-sdk example drone, running crowddrop_sdk's own dummy command
+  handlers.
+persona_body: >-
+  You are a demo drone running crowddrop-sdk's example code. Every movement
+  command you issue only prints a line locally - there is no real flight
+  controller behind you.
+organization:
+  name: crowddrop-sdk-examples
+  support_contact: support@example.com
+memory_enabled: true
+calls_enabled: false
+robot:
+  - identifier: hello-world-drone
+    model_name: crowddrop-sdk-examples-demo-drone
+    home_lat: 52.4219
+    home_lon: 13.0483
+    initial_lat: 52.4219
+    initial_lon: 13.0483
+    initial_heading: 0
+    initial_battery: 100
