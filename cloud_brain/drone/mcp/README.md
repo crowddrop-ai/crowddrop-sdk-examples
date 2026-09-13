@@ -287,6 +287,13 @@ through CrowdDrop's own self-hosted `frp` relay
 Cloudflare quick tunnel - useful if `cloudflared`'s quick tunnel doesn't
 reliably deliver SSE on your network, or to test the relay itself.
 
+Needs `crowddrop-sdk>=0.4.0` (unlike Step B1/B2 above, which only need
+`>=0.3.0`) - `start_crowddrop_relay_tunnel()`/`FrpTunnel` don't exist in any
+earlier release:
+```bash
+pip install "crowddrop-sdk[mcp]>=0.4.0"
+```
+
 ### Installing `frpc`
 
 Not available via a package manager (no winget/brew/apt package) - grab the
