@@ -21,12 +21,24 @@ DRONE_DEVICE_KEY doesn't need exporting by hand - it's auto-loaded from
 ../.env (register_agent_persona.py's output, Step 1) if you haven't
 already exported one yourself; an explicit export still wins.
 
-Env vars specific to the relay path (defaults match `crowddrop_backend`'s
-docker-compose-pure-local-testing.yaml + modules/frp/frps.local.toml -
-see that repo's docs/local_testing.md):
+Env vars specific to the relay path (defaults match running
+`crowddrop_backend`'s real docker-compose.yaml `frps` locally, with its
+default TUNNEL_PARENT_DOMAIN=localhost - see that repo's
+docker-compose.override.yml. If you're instead running its separate
+docker-compose-pure-local-testing.yaml `frps-local`, override
+SUBDOMAIN_HOST to "tunnel.local.test" to match modules/frp/frps.local.toml
+there):
     RELAY_SERVER_ADDR  - frps's host, default "127.0.0.1"
     RELAY_SERVER_PORT  - frps's control port, default 7000
-    SUBDOMAIN_HOST     - frps's subDomainHost, default "tunnel.local.test"
+    SUBDOMAIN_HOST     - frps's subDomainHost, default "tunnel.localhost"
+    PUBLIC_SCHEME      - default "http" - frps's vhostHTTPPort is plain
+                          HTTP with no nginx/TLS in front of it locally
+                          (unlike a real deployment); set to "https" only
+                          once you're pointed at a real, nginx-fronted
+                          deployment
+    PUBLIC_PORT        - default "8080" - frps's vhostHTTPPort; set to ""
+                          (empty) for a real deployment, where nginx's own
+                          443 is implicit and no port should be in the URL
 """
 import os
 import time
@@ -52,7 +64,10 @@ BACKEND_URL = os.environ["BACKEND_URL"]
 
 RELAY_SERVER_ADDR = os.environ.get("RELAY_SERVER_ADDR", "127.0.0.1")
 RELAY_SERVER_PORT = int(os.environ.get("RELAY_SERVER_PORT", "7000"))
-SUBDOMAIN_HOST = os.environ.get("SUBDOMAIN_HOST", "tunnel.local.test")
+SUBDOMAIN_HOST = os.environ.get("SUBDOMAIN_HOST", "tunnel.localhost")
+PUBLIC_SCHEME = os.environ.get("PUBLIC_SCHEME", "http")
+_public_port_raw = os.environ.get("PUBLIC_PORT", "8080")
+PUBLIC_PORT = int(_public_port_raw) if _public_port_raw else None
 
 PORT = 8765
 
@@ -71,6 +86,8 @@ def main() -> None:
         relay_server_addr=RELAY_SERVER_ADDR,
         subdomain_host=SUBDOMAIN_HOST,
         relay_server_port=RELAY_SERVER_PORT,
+        public_scheme=PUBLIC_SCHEME,
+        public_port=PUBLIC_PORT,
     ) as tunnel:
         sse_url = f"{tunnel.url}{server.settings.sse_path}"
         print(f"{DRONE_ID}: tunnel public at {tunnel.url}")

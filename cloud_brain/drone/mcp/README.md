@@ -287,11 +287,12 @@ through CrowdDrop's own self-hosted `frp` relay
 Cloudflare quick tunnel - useful if `cloudflared`'s quick tunnel doesn't
 reliably deliver SSE on your network, or to test the relay itself.
 
-Needs `crowddrop-sdk>=0.4.0` (unlike Step B1/B2 above, which only need
-`>=0.3.0`) - `start_crowddrop_relay_tunnel()`/`FrpTunnel` don't exist in any
-earlier release:
+Needs `crowddrop-sdk>=0.5.0` (unlike Step B1/B2 above, which only need
+`>=0.3.0`) - `start_crowddrop_relay_tunnel()`/`FrpTunnel` don't exist before
+`0.4.0`, and its `public_scheme`/`public_port` params (what makes local
+testing work at all - see "Running it" below) don't exist before `0.5.0`:
 ```bash
-pip install "crowddrop-sdk[mcp]>=0.4.0"
+pip install "crowddrop-sdk[mcp]>=0.5.0"
 ```
 
 ### Installing `frpc`
@@ -326,20 +327,35 @@ frpc -v
 
 ### Running it
 
-Same `DRONE_ID`/`BACKEND_URL`/`DRONE_DEVICE_KEY` as Step B2 above, plus three
-vars specific to the relay (defaults shown match `crowddrop_backend`'s
-`docker-compose-pure-local-testing.yaml` for local testing - see that repo's
-`docs/local_testing.md`):
+Same `DRONE_ID`/`BACKEND_URL`/`DRONE_DEVICE_KEY` as Step B2 above, plus vars
+specific to the relay. Defaults shown match running `crowddrop_backend`'s
+real `docker-compose.yaml` `frps` locally (its `TUNNEL_PARENT_DOMAIN`
+defaults to `localhost`, see that repo's `docker-compose.override.yml`) -
+if you're instead running its separate `docker-compose-pure-local-testing.yaml`
+`frps-local`, override `SUBDOMAIN_HOST` to `tunnel.local.test` to match
+`modules/frp/frps.local.toml` there. Either way, `PUBLIC_SCHEME`/`PUBLIC_PORT`
+are what make this reachable *at all* locally - `frps`'s `vhostHTTPPort` is
+plain HTTP with no nginx/TLS in front of it on your machine (unlike a real
+deployment), so the tunnel URL needs to say so explicitly:
 
 ```bash
 export DRONE_ID=<your drone's identifier - the config_key you registered>
 export BACKEND_URL=<your CrowdDrop backend's base URL>
 export RELAY_SERVER_ADDR=127.0.0.1     # frps's host
 export RELAY_SERVER_PORT=7000          # frps's control port
-export SUBDOMAIN_HOST=tunnel.local.test  # must match frps's own subDomainHost
+export SUBDOMAIN_HOST=tunnel.localhost # must match frps's own subDomainHost
+export PUBLIC_SCHEME=http              # no nginx/TLS locally - see above
+export PUBLIC_PORT=8080                # frps's vhostHTTPPort
 python mcp_example_relay.py
 ```
 Windows (PowerShell): same variables via `$env:VAR = "value"`.
+
+**One more local-only piece, outside this script's control:** the machine
+running `crowddrop_ai_agents` needs to actually resolve
+`{DRONE_ID}.{SUBDOMAIN_HOST}` back to your machine - there's no real DNS
+record for it locally (unlike the real deployment's eventual wildcard DNS).
+See that repo's `docker-compose.yml` (`fastapi` service's `extra_hosts`) for
+a one-line-per-persona local stand-in for this.
 
 ---
 
