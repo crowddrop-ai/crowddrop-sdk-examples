@@ -1,14 +1,20 @@
-# 0.4.0 is the floor because these examples rely on behavior that landed
+# 0.5.0 is the floor because these examples rely on behavior that landed
 # across several releases: edge_agent.py's per-command dummy dispatch
 # (0.1.1, replacing a blanket NotImplementedError), its telemetry-publish
 # logging (0.1.2), crowddrop_sdk.robot_protocol - RobotProtocol/
 # command_handlers_from_robot(), the recommended way to describe a device
-# on the MCP path (0.3.0; does not exist in any earlier release), and
+# on the MCP path (0.3.0; does not exist in any earlier release),
 # start_crowddrop_relay_tunnel()/FrpTunnel - the CrowdDrop-hosted relay
 # tunnel mcp/mcp_example_relay.py uses instead of a Cloudflare quick tunnel
-# (0.4.0; does not exist in any earlier release).
+# (0.4.0; does not exist in any earlier release), and that same function's
+# public_scheme/public_port params - what makes the relay path reachable
+# at all when testing locally, see mcp/README.md (0.5.0; does not exist in
+# any earlier release). This base install only pulls in the [cloud-brain]
+# extra though - the mcp/ folder's own README has its own, separate
+# `pip install "crowddrop-sdk[mcp]>=0.5.0"` step for the MCP-specific
+# dependency (the `mcp` package itself), not repeated here.
 # See https://pypi.org/project/crowddrop-sdk/ for the full version history.
-crowddrop-sdk[cloud-brain]>=0.4.0,<1.0.0
+crowddrop-sdk[cloud-brain]>=0.5.0,<1.0.0
 
 # register_agent_persona.py loads its persona definition from persona.yml.
 pyyaml>=6.0,<7.0
