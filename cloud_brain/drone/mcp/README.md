@@ -279,6 +279,61 @@ stop (this also tears down the tunnel). `BACKEND_URL` is the backend's base
 URL, not the token-vending endpoint Option A's `drone_implementation.py`
 uses - this path calls `/agents/register_external_tools` on it instead.
 
+## Step B2 (alternative): run it via CrowdDrop's own relay instead of Cloudflare
+
+**`mcp_example_relay.py`** does exactly what `mcp_example.py` does, but tunnels
+through CrowdDrop's own self-hosted `frp` relay
+(`crowddrop_sdk.mcp_tools.start_crowddrop_relay_tunnel()`) instead of a
+Cloudflare quick tunnel - useful if `cloudflared`'s quick tunnel doesn't
+reliably deliver SSE on your network, or to test the relay itself.
+
+### Installing `frpc`
+
+Not available via a package manager (no winget/brew/apt package) - grab the
+binary for your platform from
+[frp's releases page](https://github.com/fatedier/frp/releases) (v0.61.1 is
+what this workstream's own testing verified against; a newer patch release
+should work too, but hasn't been verified here).
+
+Windows (PowerShell):
+```powershell
+Invoke-WebRequest -Uri "https://github.com/fatedier/frp/releases/download/v0.61.1/frp_0.61.1_windows_amd64.zip" -OutFile "$env:TEMP\frp.zip"
+Expand-Archive -Path "$env:TEMP\frp.zip" -DestinationPath "$env:TEMP\frp" -Force
+$env:PATH += ";$env:TEMP\frp\frp_0.61.1_windows_amd64"
+```
+(only adds it to `PATH` for the current terminal session - add the extracted
+folder to your permanent `PATH` via System Properties if you'll use it
+often.)
+
+macOS/Linux:
+```bash
+curl -sSL -o /tmp/frp.tar.gz https://github.com/fatedier/frp/releases/download/v0.61.1/frp_0.61.1_$(uname -s | tr '[:upper:]' '[:lower:]')_amd64.tar.gz
+mkdir -p /tmp/frp && tar -xzf /tmp/frp.tar.gz -C /tmp/frp --strip-components=1
+sudo mv /tmp/frp/frpc /usr/local/bin/frpc
+```
+
+Verify it's on `PATH` before running `mcp_example_relay.py`:
+```bash
+frpc -v
+```
+
+### Running it
+
+Same `DRONE_ID`/`BACKEND_URL`/`DRONE_DEVICE_KEY` as Step B2 above, plus three
+vars specific to the relay (defaults shown match `crowddrop_backend`'s
+`docker-compose-pure-local-testing.yaml` for local testing - see that repo's
+`docs/local_testing.md`):
+
+```bash
+export DRONE_ID=<your drone's identifier - the config_key you registered>
+export BACKEND_URL=<your CrowdDrop backend's base URL>
+export RELAY_SERVER_ADDR=127.0.0.1     # frps's host
+export RELAY_SERVER_PORT=7000          # frps's control port
+export SUBDOMAIN_HOST=tunnel.local.test  # must match frps's own subDomainHost
+python mcp_example_relay.py
+```
+Windows (PowerShell): same variables via `$env:VAR = "value"`.
+
 ---
 
 Looking for the other option? See
