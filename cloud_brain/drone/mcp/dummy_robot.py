@@ -24,35 +24,40 @@ class DummyDrone(RobotProtocol):
     def get_device_status(self) -> str:
         return "battery: 100%, location: (52.4219, 13.0483), heading: 0"
 
-    def take_off(self) -> None:
+    def take_off(self) -> str:
         print("  -> would spin up the rotors and climb to hover altitude")
+        return "spun up the rotors and climbed to hover altitude"
 
-    def land(self) -> None:
+    def land(self) -> str:
         print("  -> would descend and cut the rotors on touchdown")
+        return "descended and cut the rotors on touchdown"
 
-    def forward(self) -> None:
+    def forward(self) -> str:
         print("  -> would pitch forward and move forward one step")
+        return "pitched forward and moved forward one step"
 
-    def backward(self) -> None:
+    def backward(self) -> str:
         print("  -> would pitch backward and move backward one step")
+        return "pitched backward and moved backward one step"
 
-    def strafe_left(self) -> None:
+    def strafe_left(self) -> str:
         print("  -> would roll left and move sideways one step")
+        return "rolled left and moved sideways one step"
 
-    def strafe_right(self) -> None:
+    def strafe_right(self) -> str:
         print("  -> would roll right and move sideways one step")
+        return "rolled right and moved sideways one step"
 
-    def turn_left(self) -> None:
+    def turn_left(self) -> str:
         print("  -> would yaw left by a fixed angle")
+        return "yawed left by a fixed angle"
 
-    def turn_right(self) -> None:
+    def turn_right(self) -> str:
         print("  -> would yaw right by a fixed angle")
+        return "yawed right by a fixed angle"
 
     def move_to(self, lat: float, lon: float) -> str:
         """Parameterized example: called with {"lat": ..., "lon": ...}, not
-        with no arguments like the movement methods above. Returning a
-        value is also optional but supported - it's surfaced back to the
-        caller as the tool's result content, unlike the fire-and-forget
-        methods above."""
+        with no arguments like the movement methods above."""
         print(f"  -> would fly to ({lat}, {lon})")
         return f"now heading to ({lat}, {lon})"

@@ -125,9 +125,11 @@ What's specific to exposing it as an *MCP tool* is this:
   `python verify_mcp_locally.py move_to lat=52.4 lon=13.0` (Step B1
   below). A return value is passed back to the caller as the tool's result
   content, the same way an exception (next bullet) is passed back as an
-  error. The eight movement methods just happen to take no arguments and
-  return nothing, since that's the fixed vocabulary Option A's Pub/Sub wire
-  contract uses - MCP itself has no such restriction.
+  error. The eight movement methods just happen to take no arguments,
+  matching the fixed vocabulary Option A's Pub/Sub wire contract uses (MCP
+  itself has no such restriction) - but each still returns a short
+  confirmation string, since an empty result leaves the caller (an LLM, in
+  real use) nothing to relay but its own guess at what happened.
 - **Raise on failure, don't just print/log.** An exception inside your
   method propagates back to CrowdDrop as a tool error - the LLM sees it
   and can react (e.g. narrate "battery too low to take off" back to the
@@ -200,6 +202,7 @@ MCP server listening locally on port 8765 (no tunnel - this stays on your machin
 Tools discovered: ['backward', 'forward', 'get_device_status', 'identify_device_type', 'land', 'move_to', 'strafe_left', 'strafe_right', 'take_off', 'turn_left', 'turn_right']
 Calling 'take_off'({})...
   -> would spin up the rotors and climb to hover altitude
+  -> spun up the rotors and climbed to hover altitude
 Call completed (isError=False).
 ```
 (Alphabetical, not the order they're defined in `dummy_robot.py` -
@@ -217,11 +220,17 @@ Calling 'move_to'({'lat': 52.4, 'lon': 13.0})...
   -> now heading to (52.4, 13.0)
 Call completed (isError=False).
 ```
-The second `->` line is `move_to`'s return value, echoed back by the
-client - the eight zero-argument commands above don't return anything, so
-you won't see that line for them. `identify_device_type` and
-`get_device_status` (see "Why these two methods specifically" above)
-behave the same way - try `python verify_mcp_locally.py get_device_status`.
+Same two-line shape as `take_off` above: the first `->` line is the
+method's own `print()` (only visible in the server process's own console -
+here, the same process, since `verify_mcp_locally.py` runs the server
+in-process); the second is its return value, echoed back by the client -
+every action method in `dummy_robot.py` returns a value now, not just
+`move_to`, so the caller (an LLM, in real use) has something real to relay
+instead of having to improvise a confirmation from an empty result.
+`identify_device_type`/`get_device_status` (see "Why these two methods
+specifically" above) only return a value, no `print()`, so calling either
+shows just the one `->` line - try
+`python verify_mcp_locally.py get_device_status`.
 
 ## Step B2: run it for real
 
